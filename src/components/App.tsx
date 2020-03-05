@@ -13,6 +13,15 @@ html {
       background-color: #333;
       color: #eee;
     }
+a {
+      background-color: #333;
+      color: #eee;
+      text-decoration: none;
+}
+a:hover {
+      background-color: #eee;
+      color: #333
+}
 `
 
 export const App: React.FC = () => {
@@ -39,7 +48,7 @@ export const App: React.FC = () => {
   useEffect(() => {
     if(active){
       setTimeout(() => {
-        setAngle(angle+1)
+        setAngle((angle + 1) % 360)
       }, 1)
     }
   })
@@ -59,8 +68,9 @@ export const App: React.FC = () => {
           stroke="black"/>
       </svg>
       <div css={css({width: '10rem', height: '6rem', position: 'absolute', right: 0, left: 0, top: 0, bottom: 0, margin: 'auto'})}>
-        <h1>{screen.width}, {screen.height}</h1>
+        <h1>{angle}</h1>
         <button onClick={() => setActive(!active)}>click</button>
+        <div><a href="https://github.com/kirisaki/react-svg">GitHub repository</a></div>
       </div>
     </main>
   )
