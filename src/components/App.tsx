@@ -16,7 +16,7 @@ html {
 `
 
 export const App: React.FC = () => {
-  const [pos, setState] = useState({width: 0, height: 0})
+  const [screen, setState] = useState({width: 0, height: 0})
   const prev = useRef({width: 0, height: 0})
   useEffect(() => {
     const resizeObserver = new ResizeObserver(es => {
@@ -34,15 +34,37 @@ export const App: React.FC = () => {
     resizeObserver.observe(target)
     return () => resizeObserver.unobserve(target)
   })
+  const arc = convert(screen.width/2, screen.height/2, 70, -10, 170)
   return (
     <main css={css({width: '100vw', height: '100vh', position: 'relative'})}>
       <Global styles={globalStyle} />
       <svg id="svgcanvas" css={css({width: '100vw', height: '100vh', position: 'absolute'})}>
-        <path d={`M ${pos.width/2}, ${pos.height/2} a 90 90 -30 0 1 0,90`} fill="none" stroke="black"/>
+        <path d={`M ${arc.rx}, ${arc.ry} a ${arc.rad} ${arc.rad} ${arc.start} ${arc.largeArcFlag} ${arc.sweepFlag} ${arc.dx},${arc.dy}`} fill="none" stroke="black"/>
       </svg>
       <div css={css({width: '10rem', height: '6rem', position: 'absolute', right: 0, left: 0, top: 0, bottom: 0, margin: 'auto'})}>
         <h1>nyaan</h1>
       </div>
     </main>
   )
+}
+
+type Arc = {
+  rx: number
+  ry: number
+  rad: number
+  start: number
+  largeArcFlag: number
+  sweepFlag: number
+  dx: number
+  dy: number
+}
+
+const convert = (x: number, y: number, rad: number, start: number, end: number): Arc => {
+  const rx = x + rad * Math.cos(start/360*2*Math.PI)
+  const ry = y + rad * Math.sin(start/360*2*Math.PI)
+  const rx2 = x + rad * Math.cos(end/360*2*Math.PI)
+  const ry2 = y + rad * Math.sin(end/360*2*Math.PI)
+  const dx = rx2 - rx
+  const dy = ry2 - ry
+  return {rx, ry, rad, start, largeArcFlag: 0, sweepFlag: 1, dx, dy}
 }
