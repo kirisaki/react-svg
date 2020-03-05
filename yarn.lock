@@ -1719,6 +1719,11 @@ flush-write-stream@^1.0.0:
     inherits "^2.0.3"
     readable-stream "^2.3.6"
 
+fn-mt@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/fn-mt/-/fn-mt-1.2.0.tgz#d285341b1693fded1efbc2c40068b160459dfc64"
+  integrity sha512-zwGfSljXPlHlweN1dqjcf7iOm0kI/I7BVbl9tSF0M5yopglXFnaXHiBI8fPZNMdU6A3k2Y0vZ1+BZ2T1MuLAhw==
+
 follow-redirects@^1.0.0:
   version "1.10.0"
   resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.10.0.tgz#01f5263aee921c6a54fb91667f08f4155ce169eb"

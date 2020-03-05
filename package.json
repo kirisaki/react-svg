@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@emotion/core": "^10.0.28",
+    "fn-mt": "^1.2.0",
     "react": "^16.13.0",
     "react-dom": "^16.13.0"
   }
