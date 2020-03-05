@@ -14,7 +14,6 @@ html {
       color: #eee;
     }
 a {
-      background-color: #333;
       color: #eee;
       text-decoration: none;
 }
@@ -44,7 +43,7 @@ export const App: React.FC = () => {
     resizeObserver.observe(target)
     return () => resizeObserver.unobserve(target)
   })
-  const [active, setActive] = useState(false)
+  const [active, setActive] = useState(true)
   useEffect(() => {
     if(active){
       setTimeout(() => {
@@ -59,13 +58,10 @@ export const App: React.FC = () => {
       <Global styles={globalStyle} />
       <svg css={css({width: '100vw', height: '100vh', position: 'absolute'})}>
         <path
-          css={css({
-            strokeDasharray: 1000,
-            animation: `${pathanim} 4.5s`,
-          })}
           d={arcStr}
           fill="none"
-          stroke="black"/>
+          stroke="black"
+          strokeWidth="30"/>
       </svg>
       <div css={css({width: '10rem', height: '6rem', position: 'absolute', right: 0, left: 0, top: 0, bottom: 0, margin: 'auto'})}>
         <h1>{angle}</h1>
@@ -75,15 +71,6 @@ export const App: React.FC = () => {
     </main>
   )
 }
-
-const pathanim = keyframes({
-  from: {
-    strokeDashoffset: 1000,
-  },
-  to: {
-    strokeDashoffset: 0,
-  },
-})
 
 type Arc = {
   rx: number
@@ -104,6 +91,7 @@ const convert = (x: number, y: number, rad: number, start: number, end_: number)
   const ry2 = y + rad * Math.sin(end/360*2*Math.PI)
   const dx = rx2 - rx
   const dy = ry2 - ry
-  const largeArcFlag = end > 180 ? 1 : 0
-  return {rx, ry, rad, start, largeArcFlag, sweepFlag: 1, dx, dy}
+  const largeArcFlag = Math.abs(end) > 180 ? 1 : 0
+  const sweepFlag = start < end ? 1 : 0
+  return {rx, ry, rad, start, largeArcFlag, sweepFlag, dx, dy}
 }
