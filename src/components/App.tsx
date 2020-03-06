@@ -7,21 +7,40 @@ import { newRandGen, randNext, randRange } from 'fn-mt'
 
 const globalStyle = css({
   '*': {
-      padding: 0,
-      margin: 0,
-    },
+    padding: 0,
+    margin: 0,
+  },
   html: {
-      backgroundColor: '#333',
-      color: '#eee',
-    },
+    backgroundColor: '#333',
+    color: '#eee',
+    fontFamily: "'Josefin Sans', sans-serif",
+  },
   a: {
-      color: '#eee',
-      textDecoration: 'none',
-},
+    color: '#eee',
+    textDecoration: 'none',
+    transition: '0.2s',
+  },
   'a:hover': {
-      backgroundColor: '#eee',
-      color: '#333',
-}})
+    backgroundColor: '#eee',
+    color: '#333',
+  },
+  button: {
+    width: '6rem',
+    height: '2rem',
+    padding: '0.2rem',
+    margin: '0.5rem',
+    backgroundColor: 'transparent',
+    color: '#eee',
+    border: '1px #eee solid',
+    borderRadius: '1rem',
+    fontFamily: "'Josefin Sans', sans-serif",
+  },
+  'button:hover': {
+    backgroundColor: '#eee',
+    color: '#333',
+    transition: '0.2s',
+  }
+})
 
 type Ring = {
   key: number
@@ -54,22 +73,37 @@ export const App: React.FC = () => {
   })
 
   //Initilize rings' state
-  const [rings, setRings] = useState(() => {
+  const emptyRing: Ring[] = []
+  const [rings, setRings] = useState(emptyRing)
+  const [gen, setGen] = useState(() =>{
     let gen = newRandGen(Date.now())
     // Stabilize random generator
     for(let i = 0; i < 4000; i++){
-      const [_, g] = randNext(gen)
+      const [, g] = randNext(gen)
       gen = g
     }
+    return gen
+  })
+  const setGenWithSeed = (n: number) => {
+    let gen = newRandGen(Date.now())
+    // Stabilize random generator
+    for(let i = 0; i < 4000; i++){
+      const [, g] = randNext(gen)
+      gen = g
+    }
+    setGen(gen)
+  }
+  const generate = () => {
+    let g = gen
     const rads = [...Array(20).keys()].map(i => i * 30).concat([...Array(20).keys()].map(i => i * 30)).concat([...Array(20).keys()].map(i => i * 30))
     let results: Ring[] = []
     rads.forEach((rad, key) => {
-      const [n1, g1] = randRange(0, 360, gen)
+      const [n1, g1] = randRange(0, 360, g)
       const [n2, g2] = randRange(0, 360, g1)
       const [hue, g3] = randRange(0, 360, g2)
       const [rot, g4] = randRange(0, 2, g3)
-      gen = g4
-      let start =0
+      g = g4
+      let start = 0
       let end = 0
       if(n1 < n2){
         start = n1
@@ -82,8 +116,9 @@ export const App: React.FC = () => {
       const rotCW = rot == 0 ? false : true
       results.push({key, start: start, now: start, end, rad, color, rotCW})
     })
-    return results
-  })
+    setGen(g)
+    setRings(results)
+  }
 
   // Animation state
   const [tick, setTick] = useState(0)
@@ -115,9 +150,12 @@ export const App: React.FC = () => {
       <svg css={css({width: '100vw', height: '100vh', position: 'absolute'})}>
       {rings.map(r => renderRing(screen.width/2, screen.height/2, r))}
       </svg>
-      <div css={css({width: '10rem', height: '6rem', position: 'absolute', right: 0, left: 0, top: 0, bottom: 0, margin: 'auto'})}>
+      <div css={css({width: '15rem', height: '10rem', position: 'absolute', right: 0, left: 0, top: 0, bottom: 0, margin: 'auto'})}>
         <h1>svg-animation</h1>
-        <button onClick={() => setActive(!active)}>click</button>
+        <div css={css({display: 'flex'})}>
+          <button onClick={() => setActive(!active)}>Random</button>
+          <button onClick={() => setActive(!active)}>From seed</button>
+        </div>
         <div><a href="https://github.com/kirisaki/react-svg">GitHub repository</a></div>
       </div>
     </main>
