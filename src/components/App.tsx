@@ -18,11 +18,6 @@ const globalStyle = css({
   a: {
     color: '#eee',
     textDecoration: 'none',
-    transition: '0.2s',
-  },
-  'a:hover': {
-    backgroundColor: '#eee',
-    color: '#333',
   },
   button: {
     width: '6rem',
@@ -34,11 +29,11 @@ const globalStyle = css({
     border: '1px #eee solid',
     borderRadius: '1rem',
     fontFamily: "'Josefin Sans', sans-serif",
+    transition: '0.2s',
   },
   'button:hover': {
     backgroundColor: '#eee',
     color: '#333',
-    transition: '0.2s',
   }
 })
 
@@ -171,7 +166,7 @@ export const App: React.FC = () => {
       </svg>
       <div css={css({
         width: '15rem',
-        height: '10rem',
+        height: '11rem',
         position: 'absolute',
         right: 0, left: 0,
         top: 0,
@@ -200,7 +195,10 @@ export const App: React.FC = () => {
           <button onClick={randomHandler}>Random</button>
           <button onClick={fromSeedHandler}>From seed</button>
         </div>
-        <div><a href="https://github.com/kirisaki/react-svg">GitHub repository</a></div>
+        <div css={css({display: 'flex', paddingTop: '0.5rem', alignItems: 'center'})}>
+          <div css={css({width: '30%', fontSize: '1.5rem'})}><a href="https://github.com/kirisaki/react-svg"><i className="fab fa-github"></i></a></div>
+          <div css={css({width: '70%', textAlign: 'right'})}><a href="https://twitter.com/A_kirisaki">@A_kirisaki</a></div>
+        </div>
       </div>
     </main>
   )
