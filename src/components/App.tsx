@@ -123,11 +123,10 @@ export const App: React.FC = () => {
       setActive(false)
     }
     prevTimeRef.current = time
-    requestRef.current = requestAnimationFrame(animate)
   }
   useEffect(() => {
     requestRef.current = requestAnimationFrame(animate)
-    return () => cancelAnimationFrame(requestRef.current)
+    return () => {}//cancelAnimationFrame(requestRef.current)
   }, [tick])
 
   // Seed number state
