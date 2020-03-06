@@ -75,26 +75,18 @@ export const App: React.FC = () => {
   //Initilize rings' state
   const emptyRing: Ring[] = []
   const [rings, setRings] = useState(emptyRing)
-  const [gen, setGen] = useState(() =>{
-    let gen = newRandGen(Date.now())
-    // Stabilize random generator
-    for(let i = 0; i < 4000; i++){
-      const [, g] = randNext(gen)
-      gen = g
-    }
-    return gen
-  })
+  const gen = useRef(newRandGen(Date.now()))
   const setGenWithSeed = (n: number) => {
-    let gen = newRandGen(Date.now())
+    let g = newRandGen(n)
     // Stabilize random generator
     for(let i = 0; i < 4000; i++){
-      const [, g] = randNext(gen)
-      gen = g
+      const [, g1] = randNext(g)
+      g = g1
     }
-    setGen(gen)
+    gen.current = g
   }
   const generate = () => {
-    let g = gen
+    let g = gen.current
     const rads = [...Array(20).keys()].map(i => i * 30).concat([...Array(20).keys()].map(i => i * 30)).concat([...Array(20).keys()].map(i => i * 30))
     let results: Ring[] = []
     rads.forEach((rad, key) => {
@@ -116,7 +108,7 @@ export const App: React.FC = () => {
       const rotCW = rot == 0 ? false : true
       results.push({key, start: start, now: start, end, rad, color, rotCW})
     })
-    setGen(g)
+    gen.current = g
     setRings(results)
   }
 
@@ -127,7 +119,6 @@ export const App: React.FC = () => {
   const [active, setActive] = useState(true)
   
   const animate = (time: number) => {
-    const deltaTime = time - prevTimeRef.current
     if(active){
       setTick(prevCount => (prevCount + 60))
       setRings(rings.map(r => ({...r, now: (r.start + (r.rotCW ? 1 : -1) * (r.end - r.start) * (tick / 1000)) % 360})))
@@ -144,7 +135,28 @@ export const App: React.FC = () => {
     return () => cancelAnimationFrame(requestRef.current)
   }, [tick])
 
+  // Seed number state
+  const [seed, setSeed] = useState('seed value')
+
+  // Event handlers
   const randomHandler = () => {
+    const g = newRandGen(Date.now())
+    const [s,] = randNext(g)
+    setSeed(s.toString())
+    setGenWithSeed(s)
+    setRings([])
+    generate()
+    setTick(0)
+    setActive(true)
+  }
+  const fromSeedHandler = () => {
+    const s = parseInt(seed, 10)
+    console.log(s)
+    if(!s){
+      setSeed('invalid input')
+      return
+    }
+    setGenWithSeed(s)
     setRings([])
     generate()
     setTick(0)
@@ -157,11 +169,36 @@ export const App: React.FC = () => {
       <svg css={css({width: '100vw', height: '100vh', position: 'absolute'})}>
       {rings.map(r => renderRing(screen.width/2, screen.height/2, r))}
       </svg>
-      <div css={css({width: '15rem', height: '10rem', position: 'absolute', right: 0, left: 0, top: 0, bottom: 0, margin: 'auto'})}>
-        <h1>svg-animation</h1>
+      <div css={css({
+        width: '15rem',
+        height: '10rem',
+        position: 'absolute',
+        right: 0, left: 0,
+        top: 0,
+        bottom: 0,
+        margin: 'auto',
+        padding: '1rem',
+        boxSizing: 'border-box',
+        borderRadius: '1rem',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      })}>
+        <h1 css={css({fontSize: '1.5rem'})}>svg-animation</h1>
+        <input type="text" css={css({
+          width: '100%',
+          backgroundColor: 'transparent',
+          border: '0px solid #eee',
+          borderBottomWidth: '1px',
+          textAlign: 'right',
+          fontFamily: "'Fira Code', monospace",
+          fontSize: '1.5rem',
+          color: '#eee',
+        })} 
+          value={seed}
+          onChange={(e) => setSeed(e.target.value)}
+        />
         <div css={css({display: 'flex'})}>
           <button onClick={randomHandler}>Random</button>
-          <button onClick={() => setActive(!active)}>From seed</button>
+          <button onClick={fromSeedHandler}>From seed</button>
         </div>
         <div><a href="https://github.com/kirisaki/react-svg">GitHub repository</a></div>
       </div>
