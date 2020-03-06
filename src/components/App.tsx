@@ -26,6 +26,7 @@ a:hover {
 
 type Ring = {
   start: number
+  now: number
   end: number
   rad: number
   color: string
@@ -51,20 +52,21 @@ export const App: React.FC = () => {
     return () => resizeObserver.unobserve(target)
   })
 
-  // Rings state
+  //Initilize rings' state
   const [rings, setRings] = useState(() => {
     let gen = newRandGen(Date.now())
-    for(let i = 0; i < 1000; i++){
+    // Stabilize random generator
+    for(let i = 0; i < 4000; i++){
       const [_, g] = randNext(gen)
       gen = g
     }
     const rads = [...Array(20).keys()].map(i => i * 30)
     let results: Ring[] = []
     for (const rad of rads){
-      const [start, g] = randRange(0, 360, gen)
-      const [end, g1] = randRange(0, 360, g)
-      gen = g1
-      results.push({start, end, rad, color: "#f48"})
+      const [start, g1] = randRange(0, 360, gen)
+      const [end, g2] = randRange(0, 360, g1)
+      gen = g2
+      results.push({start, now: start, end, rad, color: "#f48"})
     }
     return results
   })
@@ -72,15 +74,13 @@ export const App: React.FC = () => {
   // Animate state
   const [tick, setTick] = useState(0)
   const requestRef = React.useRef(0)
-  const previousTimeRef = React.useRef(0)
+  const prevTimeRef = React.useRef(0)
   
   const animate = (time: number) => {
-    if(previousTimeRef.current !== undefined){
-      const deltaTime = time - previousTimeRef.current
-      setTick(prevCount => (prevCount + deltaTime * 1) % 100)
-    }
-    setRings(rings.map(r => ({...r, end: (r.end + 2) % 360})))
-    previousTimeRef.current = time
+    const deltaTime = time - prevTimeRef.current
+    setTick(prevCount => (prevCount + deltaTime * 1) % 5000)
+    setRings(rings.map(r => ({...r, now: (r.start + (r.star < r.end == 0 ? -1 : 1) * (r.end - r.start) * (tick / 5000)) % 360})))
+    prevTimeRef.current = time
     requestRef.current = requestAnimationFrame(animate)
   }
   const [active, setActive] = useState(true)
@@ -114,7 +114,8 @@ const renderRing = (rx: number, ry: number, r: Ring) =>{
       ry={ry}
       rad={r.rad}
       start={r.start}
-      end={r.end}
+      end={r.now}
+      rot={r.rot}
       color={r.color}
     />
   )

@@ -8,6 +8,7 @@ type Props = {
   rad: number
   start: number
   end: number
+  rot: number
   color: string
 }
 
@@ -34,15 +35,28 @@ type ArcSet = {
   dy: number
 }
 
-const convert = (x: number, y: number, rad: number, start: number, end_: number): ArcSet => {
+const convert = (x: number, y: number, rad: number, start_: number, end_: number): ArcSet => {
   const end = end_ % 360
+  const start= start_ % 360
   const rx = x + rad * Math.cos(start/360*2*Math.PI)
   const ry = y + rad * Math.sin(start/360*2*Math.PI)
   const rx2 = x + rad * Math.cos(end/360*2*Math.PI)
   const ry2 = y + rad * Math.sin(end/360*2*Math.PI)
   const dx = rx2 - rx
   const dy = ry2 - ry
-  const largeArcFlag = Math.abs(start - end) > 180 ? 1 : 0
-  const sweepFlag = start < end ? 1 : 0
+  const large = Math.abs(start - end) > 180
+  let largeArcFlag = 0 
+  let sweepFlag = start < end ? 1 : 0
+  if(!large && sweepFlag === 1){
+    largeArcFlag = 0
+  }else if(large && sweepFlag === 1){
+    largeArcFlag = 1
+  }else if(!large && sweepFlag === 0){
+    largeArcFlag = 1
+    sweepFlag = 1
+  }else if(large && sweepFlag === 0){
+    largeArcFlag = 0
+    sweepFlag = 1
+  }
   return {rx, ry, rad, start, largeArcFlag, sweepFlag, dx, dy}
 }
