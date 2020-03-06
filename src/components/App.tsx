@@ -129,10 +129,10 @@ export const App: React.FC = () => {
   const animate = (time: number) => {
     const deltaTime = time - prevTimeRef.current
     if(active){
-      setTick(prevCount => (prevCount + deltaTime * 1))
+      setTick(prevCount => (prevCount + 60))
       setRings(rings.map(r => ({...r, now: (r.start + (r.rotCW ? 1 : -1) * (r.end - r.start) * (tick / 1000)) % 360})))
     }
-    if(tick >= 1000){
+    if(active && tick >= 1000){
       setTick(1000)
       setActive(false)
     }
@@ -144,6 +144,13 @@ export const App: React.FC = () => {
     return () => cancelAnimationFrame(requestRef.current)
   }, [tick])
 
+  const randomHandler = () => {
+    setRings([])
+    generate()
+    setTick(0)
+    setActive(true)
+  }
+
   return (
     <main id="maincontainer" css={css({width: '100vw', height: '100vh', position: 'relative'})}>
       <Global styles={globalStyle} />
@@ -153,7 +160,7 @@ export const App: React.FC = () => {
       <div css={css({width: '15rem', height: '10rem', position: 'absolute', right: 0, left: 0, top: 0, bottom: 0, margin: 'auto'})}>
         <h1>svg-animation</h1>
         <div css={css({display: 'flex'})}>
-          <button onClick={() => setActive(!active)}>Random</button>
+          <button onClick={randomHandler}>Random</button>
           <button onClick={() => setActive(!active)}>From seed</button>
         </div>
         <div><a href="https://github.com/kirisaki/react-svg">GitHub repository</a></div>
